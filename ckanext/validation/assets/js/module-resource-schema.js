@@ -272,6 +272,9 @@ this.ckan.module('resource-schema', function($) {
     },
 
     _markUnaligned: function() {
+        if (this.align_block.hasClass("no-default-schema")) {
+            return;
+        }
         this.align_block.removeClass('hidden');
         this.field_align.prop('checked', false);
     }
