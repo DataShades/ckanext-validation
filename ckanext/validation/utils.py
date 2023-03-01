@@ -2,6 +2,7 @@
 
 import logging
 import json
+import os
 from six import ensure_str
 from io import BytesIO
 from datetime import datetime as dt
@@ -16,6 +17,8 @@ from six import string_types
 import ckan.plugins as plugins
 import ckan.lib.uploader as uploader
 from ckan import model
+
+from ckanext.s3filestore.uploader import S3ResourceUploader
 
 import ckanext.validation.settings as s
 from ckanext.validation.interfaces import IDataValidation
@@ -114,8 +117,7 @@ def run_sync_validation(resource_data):
         if is_url_valid(resource_data['url']):
             source = resource_data['url']
         else:
-            upload = uploader.get_resource_uploader(resource_data)
-            source = upload.get_path(resource_data["id"])
+            source = _get_uploaded_resource_path(resource_data)
 
     report = validate(source,
                       format=_format,
@@ -137,6 +139,24 @@ def run_sync_validation(resource_data):
             dt.now()) if _table_count else ""
         resource_data['_success_validation'] = True
 
+
+def _get_uploaded_resource_path(resource_data):
+    """Get a path for uploaded resource. Supports a default ResourceUpload and
+    ckanext-s3filestore S3ResourceUploader."""
+    upload = uploader.get_resource_uploader(resource_data)
+    path = None
+
+    if isinstance(upload, uploader.ResourceUpload):
+        path = upload.get_path(resource_data['id'])
+    elif isinstance(upload, S3ResourceUploader):
+        filename = os.path.basename(resource_data["url"])
+        key_path = upload.get_path(resource_data["id"], filename)
+        path = upload.get_signed_url_to_key(key_path, {
+            'ResponseContentDisposition':
+            'attachment; filename=' + filename,
+        })
+
+    return path
 
 def _get_session(resource_data):
     dataset = tk.get_action('package_show')({
