@@ -24,13 +24,13 @@ jobs:
       - checkout
       - *step_setup_remote_docker
       - run:
-          command: .circleci/build.sh
+          command: bin/build.sh
           environment:
             CKAN_VERSION: 2.9
-      - run: .circleci/test.sh
+      - run: bin/test.sh
       - run:
           name: Process artifacts
-          command: .circleci/process-artifacts.sh
+          command: bin/process-artifacts.sh
           when: always
       - store_artifacts:
           path: /tmp/artifacts

@@ -98,14 +98,11 @@ def enqueue_validation_job(package_id, resource_id):
         }
     }
 
-    if tk.check_ckan_version('2.8'):
-        ttl = 24 * 60 * 60  # 24 hour ttl.
-        rq_kwargs = {
-            'ttl': ttl
-        }
-        if tk.check_ckan_version('2.9'):
-            rq_kwargs['failure_ttl'] = ttl
-        enqueue_args['rq_kwargs'] = rq_kwargs
+    ttl = 24 * 60 * 60  # 24 hour ttl.
+    rq_kwargs = {
+        'ttl': ttl, 'failure_ttl': ttl
+    }
+    enqueue_args['rq_kwargs'] = rq_kwargs
 
     # Optional variable, if not set, default queue is used
     queue = tk.config.get('ckanext.validation.queue', None)

@@ -7,8 +7,7 @@ import sys
 
 from ckantoolkit import (c, NotAuthorized,
                          ObjectNotFound, abort, _,
-                         render, get_action, config,
-                         check_ckan_version)
+                         render, get_action, config)
 
 from ckanext.validation import settings
 from ckanext.validation.logic.action import _search_datasets
@@ -63,12 +62,8 @@ def validation(resource_id, id=None):
 
 
 def user_confirm(msg):
-    if check_ckan_version(min_version='2.9'):
-        import click
-        return click.confirm(msg)
-    else:
-        from ckan.lib.cli import query_yes_no
-        return query_yes_no(msg) == 'yes'
+    import click
+    return click.confirm(msg)
 
 
 def error(msg):

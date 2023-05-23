@@ -1,7 +1,6 @@
 # encoding: utf-8
 
-from ckantoolkit import check_ckan_version
-
+from werkzeug.datastructures import FileStorage as MockFileStorage  # noqa
 
 MOCK_COULD_BE_VALIDATED = "ckanext.validation.utils.is_resource_could_be_validated"
 MOCK_SYNC_VALIDATE = "ckanext.validation.utils.validate"
@@ -114,17 +113,3 @@ VALID_REPORT_LOCAL_FILE = {
     'valid': True,
     'warnings': []
 }
-
-if check_ckan_version('2.9'):
-    from werkzeug.datastructures import FileStorage as MockFileStorage
-else:
-    import cgi
-
-    class MockFileStorage(cgi.FieldStorage):
-
-        def __init__(self, fp, filename):
-
-            self.file = fp
-            self.filename = filename
-            self.name = u"upload"
-            self.list = None

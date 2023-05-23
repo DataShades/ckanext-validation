@@ -3,11 +3,31 @@
 import json
 
 import ckantoolkit as tk
-from tabulator.config import PARSERS
+
 
 import ckan.plugins as plugins
 
 from ckanext.validation.interfaces import IDataValidation
+
+try:
+    from tabulator.config import PARSERS
+except NameError:
+    # Point in time list of parsers from v1.53.5 if library Tabulator not loaded
+    PARSERS = {
+        'csv': 'tabulator.parsers.csv.CSVParser',
+        'datapackage': 'tabulator.parsers.datapackage.DataPackageParser',
+        'gsheet': 'tabulator.parsers.gsheet.GsheetParser',
+        'html': 'tabulator.parsers.html.HTMLTableParser',
+        'inline': 'tabulator.parsers.inline.InlineParser',
+        'json': 'tabulator.parsers.json.JSONParser',
+        'jsonl': 'tabulator.parsers.ndjson.NDJSONParser',
+        'ndjson': 'tabulator.parsers.ndjson.NDJSONParser',
+        'ods': 'tabulator.parsers.ods.ODSParser',
+        'sql': 'tabulator.parsers.sql.SQLParser',
+        'tsv': 'tabulator.parsers.tsv.TSVParser',
+        'xls': 'tabulator.parsers.xls.XLSParser',
+        'xlsx': 'tabulator.parsers.xlsx.XLSXParser',
+    }
 
 SUPPORTED_FORMATS_KEY = u"ckanext.validation.formats"
 DEFAULT_SUPPORTED_FORMATS = [u'csv', u'xls', u'xlsx']

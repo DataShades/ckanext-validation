@@ -24,10 +24,10 @@ Data description and validation for CKAN with [Frictionless Data](https://fricti
      * [Changes in the metadata schema](#changes-in-the-metadata-schema)
      * [Extending via interfaces](#extending-via-interfaces)
   * [Action functions](#action-functions)
-	* [resource_validation_run](#resource_validation_run)
-	* [resource_validation_show](#resource_validation_show)
-	* [resource_validation_delete](#resource_validation_delete)
-	* [resource_validation_run_batch](#resource_validation_run_batch)
+    * [resource_validation_run](#resource_validation_run)
+    * [resource_validation_show](#resource_validation_show)
+    * [resource_validation_delete](#resource_validation_delete)
+    * [resource_validation_run_batch](#resource_validation_run_batch)
   * [Command Line Interface](#command-line-interface)
     * [Starting the validation process manually](#starting-the-validation-process-manually)
     * [Data validation reports](#data-validation-reports)
@@ -52,7 +52,7 @@ If you are eager to get started, jump to the [Installation](#installation) and [
 
 ## Versions supported and requirements
 
-This extension has been tested with CKAN 2.8 and 2.9.
+This extension has been tested with CKAN 2.9.
 
 It is strongly recommended to use it alongside [ckanext-scheming](https://github.com/ckan/ckanext-scheming) to define the necessary extra fields in the default CKAN schema. By default, the extension installs ckanext-scheming version 2.1.0.
 
@@ -76,13 +76,7 @@ Or:
 
 Create the database tables by running:
 
-ON CKAN >= 2.9:
-
     ckan -c /path/to/ini/file validation init-db
-
-ON CKAN <= 2.8:
-
-    paster validation init-db -c ../path/to/ini/file
 
 
 ## Configuration
@@ -97,16 +91,16 @@ Once installed, add the `validation` plugin to the `ckan.plugins` configuration 
 
 The extension requires changes in the CKAN metadata schema. The easiest way to add those is by using ckanext-scheming. Use these two configuration options to link to the dataset schema (replace with your own if you need to customize it) and the required presets:
 
-	scheming.dataset_schemas = ckanext.validation.examples:ckan_default_schema.json
-	scheming.presets = ckanext.scheming:presets.json
-    	               ckanext.validation:presets.json
+    scheming.dataset_schemas = ckanext.validation.examples:ckan_default_schema.json
+    scheming.presets = ckanext.scheming:presets.json
+                       ckanext.validation:presets.json
 
 Read more below about how to [change the CKAN metadata schema](#changes-in-the-metadata-schema)
 
 ### Operation modes
 Use the following to configure which queue async jobs are added to
 
-	ckanext.validation.queue = bulk (Defaults to default)
+    ckanext.validation.queue = bulk (Defaults to default)
 
 Use the following configuration options to choose the [operation modes](#operation-modes):
 
@@ -117,13 +111,13 @@ Use the following configuration options to choose the [operation modes](#operati
 
 By default validation will be run against the following formats: `CSV`, `XLSX` and `XLS`. You can modify these formats using the following option:
 
-	ckanext.validation.formats = csv xlsx
+    ckanext.validation.formats = csv xlsx
 
 You can also provide [validation options](#validation-options) that will be used by default when running the validation:
 
-	ckanext.validation.default_validation_options={
-	    "skip_checks": ["blank-rows", "duplicate-headers"],
-    	"headers": 3}
+    ckanext.validation.default_validation_options={
+        "skip_checks": ["blank-rows", "duplicate-headers"],
+        "headers": 3}
 
 Make sure to use indentation if the value spans multiple lines otherwise it won't be parsed.
 
@@ -302,13 +296,7 @@ This mode might be useful for instances where datasets are harvested from other 
 
 You will need to run the `worker` commmand to pick up validation jobs. Please refer to the [background jobs documentation](http://docs.ckan.org/en/latest/maintaining/background-tasks.html) for more details:
 
-ON CKAN >= 2.9:
-
     ckan -c /path/to/ini/file jobs worker
-
-ON CKAN <= 2.8:
-
-    paster jobs worker -c /path/to/ini/file
 
 
 #### Synchronous validation
@@ -577,50 +565,24 @@ def resource_validation_run_batch(context, data_dict):
 
 You can start (asynchronous) validation jobs from the command line using the `validation run` command. If no parameters are provided it will start a validation job for all resources in the site of suitable format (ie `ckanext.validation.formats`):
 
-ON CKAN >= 2.9:
-
     ckan -c /path/to/ini/file validation run
-
-ON CKAN <= 2.8:
-
-    paster validation run -c /path/to/ckan/ini
 
 You can limit the resources by specifying a dataset id or name:
 
-ON CKAN >= 2.9:
-
     ckan -c /path/to/ini/file validation run -d statistical-data-2018
-
-ON CKAN <= 2.8:
-
-    paster validation run -c /path/to/ckan/ini -d statistical-data-2018
 
 Or providing arbitrary search parameters:
 
-ON CKAN >= 2.9:
-
     ckan -c /path/to/ini/file validation run -s '{"fq":"res_format:XLSX"}'
-
-ON CKAN <= 2.8:
-
-    paster validation run -c ../ckan/development.ini -s '{"fq":"res_format:XLSX"}'
 
 
 ### Data validation reports
 
 The extension provides two small utilities to generate a global report with all the current data validation reports:
 
-ON CKAN >= 2.9:
-
     ckan -c /path/to/ini/file validation report
 
     ckan -c /path/to/ini/file validation report-full
-
-ON CKAN <= 2.8:
-
-    paster validation report -c /path/to/ckan/ini
-
-    paster validation report-full -c /path/to/ckan/ini
 
 
 Both commands will print an overview of the total number of datasets and tabular resources, and a breakdown of how many have a validation status of success,
@@ -645,20 +607,14 @@ failure or error. Additionally they will create a CSV report. `validation report
 
 In both cases you can define the location of the output CSV passing the `-o` or `--output` option:
 
-ON CKAN >= 2.9:
-
     ckan -c /path/to/ini/file validation report-full -o /tmp/reports/validation_full.csv
-
-ON CKAN <= 2.8:
-
-	paster validation report-full -c /path/to/ckan/ini -o /tmp/reports/validation_full.csv
 
 
 Check the command help for more details:
 
-	validation --help
+    validation --help
 
-	Usage: validation [options] Utilities for the CKAN data validation extension
+    Usage: validation [options] Utilities for the CKAN data validation extension
 
     Usage:
         validation init-db
@@ -702,36 +658,36 @@ Check the command help for more details:
 
 
 
-	Options:
-	  -h, --help            show this help message and exit
-	  -v, --verbose
-	  -c CONFIG, --config=CONFIG
-							Config file to use.
-	  -f FILE_PATH, --file=FILE_PATH
-							File to dump results to (if needed)
-	  -y, --yes             Automatic yes to prompts. Assume "yes" as answer to
-							all prompts and run non-interactively
-	  -r RESOURCE_ID, --resource=RESOURCE_ID
-							 Run data validation on a particular resource (if the
-							format is suitable). It can be defined multiple times.
-							Not to be used with -d or -s
-	  -d DATASET_ID, --dataset=DATASET_ID
-							 Run data validation on all resources for a particular
-							dataset (if the format is suitable). You can use the
-							dataset id or name, and it can be defined multiple
-							times. Not to be used with -r or -s
-	  -s SEARCH_PARAMS, --search=SEARCH_PARAMS
-							Extra search parameters that will be used for getting
-							the datasets to run validation on. It must be a JSON
-							object like the one used by the `package_search` API
-							call. Supported fields are `q`, `fq` and `fq_list`.
-							Check the documentation for examples. Note that when
-							using this you will have to specify the resource
-							formats to target yourself. Not to be used with -r or
-							-d.
-	  -o OUTPUT_FILE, --output=OUTPUT_FILE
-							Location of the CSV validation report file on the
-							relevant commands.
+    Options:
+      -h, --help            show this help message and exit
+      -v, --verbose
+      -c CONFIG, --config=CONFIG
+                            Config file to use.
+      -f FILE_PATH, --file=FILE_PATH
+                            File to dump results to (if needed)
+      -y, --yes             Automatic yes to prompts. Assume "yes" as answer to
+                            all prompts and run non-interactively
+      -r RESOURCE_ID, --resource=RESOURCE_ID
+                             Run data validation on a particular resource (if the
+                            format is suitable). It can be defined multiple times.
+                            Not to be used with -d or -s
+      -d DATASET_ID, --dataset=DATASET_ID
+                             Run data validation on all resources for a particular
+                            dataset (if the format is suitable). You can use the
+                            dataset id or name, and it can be defined multiple
+                            times. Not to be used with -r or -s
+      -s SEARCH_PARAMS, --search=SEARCH_PARAMS
+                            Extra search parameters that will be used for getting
+                            the datasets to run validation on. It must be a JSON
+                            object like the one used by the `package_search` API
+                            call. Supported fields are `q`, `fq` and `fq_list`.
+                            Check the documentation for examples. Note that when
+                            using this you will have to specify the resource
+                            formats to target yourself. Not to be used with -r or
+                            -d.
+      -o OUTPUT_FILE, --output=OUTPUT_FILE
+                            Location of the CSV validation report file on the
+                            relevant commands.
 
 
 ## Running the Tests

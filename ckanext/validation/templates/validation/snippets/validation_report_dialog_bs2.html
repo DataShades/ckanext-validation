@@ -8,6 +8,6 @@
       </div>
 </div>
 
-{% set type = 'asset' if h.is_ckan_29() else 'resource' %}
+{% set type = 'asset' %}
 {% include 'validation/snippets/validation_report_form_' ~ type ~ '.html' %}
 

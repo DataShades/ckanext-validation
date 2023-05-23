@@ -7,6 +7,6 @@ mock
 pyfakefs==2.7
 pytest-ckan
 pytest-cov
-selenium==3.141.0
-splinter>=0.13.0,<0.17
-faker==3.0.1
+selenium==4.8.2
+splinter>=0.13.0
+faker==18.3.0

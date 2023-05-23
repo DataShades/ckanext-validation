@@ -1,4 +1,4 @@
-{% set type = 'asset' if h.is_ckan_29() else 'resource' %}
+{% set type = 'asset' %}
 
 {% include 'validation/snippets/validation_style_' ~ type ~ '.html' %}
 
@@ -10,11 +10,7 @@
 {% block breadcrumb_content %}
   {{ super() }}
 
-  {% if h.is_ckan_29() %}
-    <li><a href="{{ h.url_for('dataset_resource.read', id=dataset.id, resource_id=resource.id ) }}">{{ h.resource_display_name(resource)|truncate(30) }}</a></li>
-  {% else %}
-    <li><a href="{{ h.url_for(controller='package', action='resource_read', id=dataset.id, resource_id=resource.id ) }}">{{ h.resource_display_name(resource)|truncate(30) }}</a></li>
-  {% endif %}
+  <li><a href="{{ h.url_for('dataset_resource.read', id=dataset.id, resource_id=resource.id ) }}">{{ h.resource_display_name(resource)|truncate(30) }}</a></li>
   <li class="active"><a href="">Validation Report</a></li>
 {% endblock %}
 

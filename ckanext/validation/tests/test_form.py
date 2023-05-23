@@ -6,7 +6,6 @@ import six
 import mock
 import pytest
 from bs4 import BeautifulSoup
-from ckantoolkit import check_ckan_version
 
 from ckan.tests.factories import Sysadmin, Dataset
 from ckan.tests.helpers import call_action
@@ -20,12 +19,8 @@ from ckanext.validation.tests.helpers import (
     MockFileStorage,
 )
 
-if check_ckan_version('2.9'):
-    NEW_RESOURCE_URL = '/dataset/{}/resource/new'
-    EDIT_RESOURCE_URL = '/dataset/{}/resource/{}/edit'
-else:
-    NEW_RESOURCE_URL = '/dataset/new_resource/{}'
-    EDIT_RESOURCE_URL = '/dataset/{}/resource_edit/{}'
+NEW_RESOURCE_URL = '/dataset/{}/resource/new'
+EDIT_RESOURCE_URL = '/dataset/{}/resource/{}/edit'
 
 
 def _get_resource_new_page_as_sysadmin(app, id):
@@ -69,29 +64,21 @@ def _post(app, url, params, upload=None):
     params['save'] = ''
     params.setdefault('id', '')
 
-    if check_ckan_version('2.9'):
-        if upload:
-            field_name = 0
-            file_name = 1
-            file_data = 2
+    if upload:
+        field_name = 0
+        file_name = 1
+        file_data = 2
 
-            for entry in upload:
-                params[entry[field_name]] = MockFileStorage(
-                    six.BytesIO(six.ensure_binary(entry[file_data])),
-                    entry[file_name])
+        for entry in upload:
+            params[entry[field_name]] = MockFileStorage(
+                six.BytesIO(six.ensure_binary(entry[file_data])),
+                entry[file_name])
 
-        kwargs = {
-            'url': url,
-            'data': params,
-            'extra_environ': _get_sysadmin_env()
-        }
-    else:
-        args.append(url)
-        kwargs = {
-            'params': params,
-            'extra_environ': _get_sysadmin_env(),
-            'upload_files': upload,
-        }
+    kwargs = {
+        'url': url,
+        'data': params,
+        'extra_environ': _get_sysadmin_env()
+    }
 
     return app.post(*args, **kwargs)
 

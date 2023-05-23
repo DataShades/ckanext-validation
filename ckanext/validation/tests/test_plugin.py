@@ -95,7 +95,7 @@ class TestResourceControllerHooksUpdate(object):
         """Validation must be triggered during update on changing format"""
         resource = resource_factory(format="PDF")
 
-        assert mock_enqueue.not_called()
+        mock_enqueue.assert_not_called()
 
         resource['format'] = 'CSV'
 
@@ -109,7 +109,7 @@ class TestResourceControllerHooksUpdate(object):
         validation_options"""
         resource = resource_factory(format="PDF")
 
-        assert mock_enqueue.not_called()
+        mock_enqueue.assert_not_called()
 
         resource['validation_options'] = {'headers': 1, 'skip_rows': ['#']}
         resource['format'] = 'CSV'

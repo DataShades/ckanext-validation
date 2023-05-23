@@ -4,8 +4,8 @@ Feature: Resource validation
         Given "TestOrgEditor" as the persona
         When I log in
         And I open the new resource form for dataset "warandpeace"
-        And I fill in "name" with "Test validation schema"
         And I attach the file "test.csv" to "upload"
+        And I fill in "name" with "Test validation schema"
         And I fill in "description" with "Testing validation schema"
         And I attach the file "test_schema.json" to "schema_upload"
         And I press the element with xpath "//button[contains(@class, 'btn-primary')]"
@@ -35,8 +35,8 @@ Feature: Resource validation
         Given "TestOrgEditor" as the persona
         When I log in
         And I open the new resource form for dataset "warandpeace"
-        And I fill in "name" with "Test validation options"
         And I attach the file "test.csv" to "upload"
+        And I fill in "name" with "Test validation options"
         And I fill in "description" with "Testing validation options"
         And I attach the file "test_schema.json" to "schema_upload"
         And I fill in "validation_options" with "{"headers": 1}"
@@ -63,8 +63,8 @@ Feature: Resource validation
         Given "TestOrgEditor" as the persona
         When I log in
         And I open the new resource form for dataset "warandpeace"
-        And I fill in "name" with "Test valid CSV create"
         And I attach the file "test.csv" to "upload"
+        And I fill in "name" with "Test valid CSV create"
         And I attach the file "test_schema.json" to "schema_upload"
         And I fill in "description" with "Testing validation that should pass"
         And I execute the script "document.getElementById('field-format').value='CSV'"
@@ -80,8 +80,8 @@ Feature: Resource validation
         Given "TestOrgEditor" as the persona
         When I log in
         And I open the new resource form for dataset "warandpeace"
-        And I fill in "name" with "Test valid CSV update"
         And I attach the file "invalid.csv" to "upload"
+        And I fill in "name" with "Test valid CSV update"
         And I fill in "description" with "Testing validation that should pass on update"
         And I press the element with xpath "//button[contains(@class, 'btn-primary')]"
         Then I should see "Test valid CSV update"
@@ -101,8 +101,8 @@ Feature: Resource validation
         Given "TestOrgEditor" as the persona
         When I log in
         And I open the new resource form for dataset "warandpeace"
-        And I fill in "name" with "Test invalid CSV update"
         And I attach the file "test.csv" to "upload"
+        And I fill in "name" with "Test invalid CSV update"
         And I attach the file "test_schema.json" to "schema_upload"
         And I fill in "description" with "Testing validation that should fail on update"
         And I press the element with xpath "//button[contains(@class, 'btn-primary')]"

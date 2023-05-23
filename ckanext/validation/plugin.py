@@ -9,20 +9,13 @@ import ckantoolkit as tk
 import ckan.plugins as p
 from ckan.lib.plugins import DefaultTranslation
 
-import ckanext.validation.settings as s
-from ckanext.validation.model import tables_exist
-from ckanext.validation.helpers import _get_helpers, is_ckan_29
-from ckanext.validation import validators
-from ckanext.validation import utils
-from ckanext.validation.logic import action
-from ckanext.validation.logic import auth
+from . import settings as s, utils, validators
+from .helpers import _get_helpers
+from .logic import action, auth
+from .model import tables_exist
+from .plugin_mixins.flask_plugin import MixinPlugin
 
 log = logging.getLogger(__name__)
-
-if is_ckan_29():
-    from .plugin_mixins.flask_plugin import MixinPlugin
-else:
-    from .plugin_mixins.pylons_plugin import MixinPlugin
 
 
 class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
@@ -47,10 +40,7 @@ class ValidationPlugin(MixinPlugin, p.SingletonPlugin, DefaultTranslation):
 
     def update_config(self, config_):
         if not tables_exist():
-            if is_ckan_29():
-                init_command = 'ckan validation init-db'
-            else:
-                init_command = 'paster --plugin=ckanext-validation validation init-db'
+            init_command = 'ckan validation init-db'
             log.critical(u'''
 The validation extension requires a database setup.
 Validation pages will not be enabled.
