@@ -39,7 +39,7 @@ class TestResourceValidationRun(object):
             call_action('resource_validation_run', resource_id='not_exists')
 
     def test_resource_validation_wrong_format(self):
-        resource = factories.Resource(format='pdf')
+        resource = factories.Resource(format='pdf', schema=SCHEMA)
 
         with pytest.raises(tk.ValidationError) as err:
             call_action('resource_validation_run', resource_id=resource['id'])
@@ -47,7 +47,7 @@ class TestResourceValidationRun(object):
         assert 'Unsupported resource format' in err.value.error_dict['format']
 
     def test_resource_validation_no_url_or_upload(self):
-        resource = factories.Resource(url='', format='csv')
+        resource = factories.Resource(url='', format='csv', schema=SCHEMA)
 
         with pytest.raises(tk.ValidationError) as err:
             call_action('resource_validation_run', resource_id=resource['id'])
@@ -59,7 +59,7 @@ class TestResourceValidationRun(object):
     def test_resource_validation_with_url(self, mocked_responses):
         url = 'http://example.com'
         mocked_responses.add(responses.GET, url, body=VALID_CSV, stream=True)
-        resource = factories.Resource(url=url, format='csv')
+        resource = factories.Resource(url=url, format='csv', schema=SCHEMA)
 
         call_action('resource_validation_run', resource_id=resource['id'])
 
@@ -90,7 +90,7 @@ class TestResourceValidationRun(object):
         url = 'https://some.url'
         mocked_responses.add(responses.GET, url, body=VALID_CSV, stream=True)
 
-        resource = {'format': 'csv', 'url': url}
+        resource = {'format': 'csv', 'url': url, 'schema': SCHEMA}
 
         dataset = factories.Dataset(resources=[resource])
 
@@ -251,6 +251,45 @@ class TestResourceValidationOnCreate(object):
                         schema=SCHEMA)
 
         assert not Session.query(Validation).count()
+
+    def test_validation_skips_no_schema_provided(self):
+        """If the schema is missed - no validation entity should be saved in database"""
+        dataset = factories.Dataset()
+
+        mock_upload = MockFileStorage(io.BytesIO(VALID_CSV), 'valid.csv')
+
+        call_action('resource_create',
+                    package_id=dataset['id'],
+                    format='csv',
+                    upload=mock_upload,
+                    url_type='upload')
+
+        assert not Session.query(Validation).count()
+
+    def test_validation_report_delete_when_schema_removed(self):
+        """If the schema is deleted - no validation entity should be saved in database"""
+        dataset = factories.Dataset()
+
+        mock_upload = MockFileStorage(io.BytesIO(VALID_CSV), 'valid.csv')
+
+        resource_1 = call_action('resource_create',
+                    package_id=dataset['id'],
+                    format='csv',
+                    upload=mock_upload,
+                    url_type='upload',
+                    schema=SCHEMA)
+
+        assert Session.query(Validation).count()
+
+        call_action('resource_patch',
+                    id=resource_1['id'],
+                    schema='')
+
+        resource_2 = call_action('resource_show',
+                    id=resource_1['id'])
+
+        assert not Session.query(Validation).count()
+
 
     def test_validation_passes_on_upload(self):
         dataset = factories.Dataset()

@@ -6,7 +6,7 @@ import mock
 from ckan.tests import factories
 
 import ckanext.validation.helpers as h
-
+from ckanext.validation.tests.helpers import SCHEMA
 
 def _assert_validation_badge_status(resource, status):
     out = h.get_validation_badge(resource)
@@ -31,11 +31,20 @@ class TestBadges(object):
 
         assert h.get_validation_badge(resource) == ''
 
-    def test_get_validation_badge_success(self, mock_is_validatable):
+    def test_hide_validation_badge_no_schema(self, mock_is_validatable):
         resource = factories.Resource(
             format='CSV',
             validation_status='success',
             validation_timestamp=datetime.datetime.utcnow().isoformat())
+
+        assert h.get_validation_badge(resource) == ''
+
+    def test_get_validation_badge_success(self, mock_is_validatable):
+        resource = factories.Resource(
+            format='CSV',
+            validation_status='success',
+            validation_timestamp=datetime.datetime.utcnow().isoformat(),
+            schema=SCHEMA)
 
         _assert_validation_badge_status(resource, 'success')
 
@@ -43,7 +52,8 @@ class TestBadges(object):
         resource = factories.Resource(
             format='CSV',
             validation_status='failure',
-            validation_timestamp=datetime.datetime.utcnow().isoformat())
+            validation_timestamp=datetime.datetime.utcnow().isoformat(),
+            schema=SCHEMA)
 
         _assert_validation_badge_status(resource, 'invalid')
 
@@ -51,7 +61,8 @@ class TestBadges(object):
         resource = factories.Resource(
             format='CSV',
             validation_status='error',
-            validation_timestamp=datetime.datetime.utcnow().isoformat())
+            validation_timestamp=datetime.datetime.utcnow().isoformat(),
+            schema=SCHEMA)
 
         _assert_validation_badge_status(resource, 'error')
 
@@ -59,6 +70,7 @@ class TestBadges(object):
         resource = factories.Resource(
             format='CSV',
             validation_status='not-sure',
+            schema=SCHEMA,
         )
 
         _assert_validation_badge_status(resource, 'unknown')

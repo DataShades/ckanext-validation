@@ -50,6 +50,13 @@ def resource_validation_run(context, data_dict):
 
     resource = tk.get_action(u'resource_show')(context, {u'id': resource_id})
 
+    if not resource.get('schema'):
+        try:
+            tk.get_action(u'resource_validation_delete')(context, data_dict)
+        except tk.ObjectNotFound:
+            pass
+        return
+
     # TODO: limit to sysadmins
     async_job = data_dict.get(u'async', True)
 

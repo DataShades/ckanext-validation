@@ -21,7 +21,6 @@ from ckan import model
 import ckanext.validation.settings as s
 from ckanext.validation.interfaces import IDataValidation
 from ckanext.validation.validation_status_helper import ValidationStatusHelper, StatusTypes
-from ckanext.validation.helpers import is_url_valid
 from ckanext.validation.validators import resource_schema_validator
 
 log = logging.getLogger(__name__)
@@ -50,7 +49,7 @@ def process_schema_fields(data_dict):
             uploader._get_underlying_file(schema_upload).read())
 
     elif schema_url:
-        if not is_url_valid(schema_url):
+        if not tk.h.is_url_valid(schema_url):
             raise tk.ValidationError({u'schema_url': ['Must be a valid URL']})
 
         try:
@@ -99,10 +98,24 @@ def run_sync_validation(resource_data):
     schema = resource_data.get('schema')
 
     if tk.asbool(resource_data.get('align_default_schema')):
-        schema = _get_default_schema(resource_data["package_id"])
+        schema = get_default_schema(resource_data["package_id"])
 
     if schema and isinstance(schema, string_types):
-        schema = schema if is_url_valid(schema) else json.loads(schema)
+        schema = schema if tk.h.is_url_valid(schema) else json.loads(schema)
+
+    if not schema:
+        resource_id = resource_data.get('id')
+        if not resource_id:
+            return
+
+        context = {u'ignore_auth': True}
+        data_dict = {u'resource_id': resource_id}
+
+        try:
+            tk.get_action(u'resource_validation_delete')(context, data_dict)
+        except tk.ObjectNotFound:
+            pass
+        return
 
     _format = resource_data.get('format', '').lower()
     options = get_resource_validation_options(resource_data)
@@ -112,7 +125,7 @@ def run_sync_validation(resource_data):
     if is_uploaded_file(new_file):
         source = _get_new_file_stream(new_file)
     else:
-        if is_url_valid(resource_data['url']):
+        if tk.h.is_url_valid(resource_data['url']):
             source = resource_data['url']
         else:
             source = _get_uploaded_resource_path(resource_data)
@@ -226,7 +239,7 @@ def is_resource_could_be_validated(context, data_dict):
     return False
 
 
-def _get_default_schema(package_id):
+def get_default_schema(package_id):
     """Dataset could have a default_schema, that could be used
     to validate resource"""
 
